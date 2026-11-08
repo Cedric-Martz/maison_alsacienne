@@ -1,0 +1,213 @@
+media:
+  - name: images
+    label: Photos du site
+    input: assets/media
+    output: /assets/media
+    extensions: [jpg, jpeg, png, webp]
+    categories: [image]
+    rename: safe
+
+content:
+  - name: informations
+    label: Informations pratiques
+    type: file
+    path: content/informations.json
+    format: json
+    operations:
+      delete: false
+    fields:
+      - name: presentation
+        label: Texte de présentation de l’accueil
+        type: text
+        required: true
+      - name: saison
+        label: Période d’ouverture
+        type: string
+        required: true
+      - name: horaires_semaine
+        label: Horaires du mercredi et jeudi
+        type: string
+        required: true
+      - name: horaires_dimanche
+        label: Horaires des dimanches pairs
+        type: string
+        required: true
+      - name: note_horaires
+        label: Précision sur les horaires
+        type: string
+        required: true
+      - name: tarif_individuel
+        label: Tarif individuel
+        type: string
+        required: true
+      - name: tarif_groupe
+        label: Tarif groupe
+        type: string
+        required: true
+      - name: tarif_scolaire
+        label: Tarif scolaire
+        type: string
+        required: true
+      - name: gratuite
+        label: Condition de gratuité
+        type: string
+        required: true
+      - name: telephone_affiche
+        label: Téléphone affiché
+        type: string
+        required: true
+      - name: telephone_lien
+        label: Téléphone international
+        type: string
+        description: "Format conseillé : +33388205990"
+        required: true
+      - name: email
+        label: Adresse e-mail
+        type: string
+        required: true
+      - name: adresse_courrier
+        label: Adresse postale de l’association
+        type: text
+        required: true
+      - name: adresse_parc
+        label: Adresse du parc
+        type: text
+        required: true
+      - name: itineraire
+        label: Lien vers l’itinéraire
+        type: string
+        required: true
+      - name: instagram_url
+        label: Lien Instagram
+        type: string
+      - name: instagram_nom
+        label: Nom du compte Instagram
+        type: string
+
+  - name: galerie
+    label: Galerie photos
+    type: file
+    path: content/galerie.json
+    format: json
+    list:
+      collapsible:
+        collapsed: true
+        summary: "{legende} — {annee}"
+    operations:
+      delete: false
+    fields:
+      - name: image
+        label: Photo
+        type: image
+        required: true
+        options:
+          media: images
+      - name: legende
+        label: Légende
+        type: string
+        required: true
+      - name: annee
+        label: Année
+        type: string
+        required: true
+        pattern: "^[0-9]{4}$"
+
+  - name: actualites
+    label: Actualités
+    type: collection
+    path: content/actualites
+    format: json
+    filename: "{date}-{title}.json"
+    view:
+      fields: [title, date, categorie]
+      primary: title
+      sort: [date, title]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: Titre
+        type: string
+        required: true
+      - name: date
+        label: Date de publication
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: categorie
+        label: Catégorie
+        type: string
+        required: true
+      - name: image
+        label: Photo
+        type: image
+        required: true
+        options:
+          media: images
+      - name: image_alt
+        label: Description de la photo
+        type: string
+        required: true
+      - name: resume
+        label: Texte
+        type: text
+        required: true
+      - name: lien
+        label: Lien facultatif
+        type: string
+      - name: libelle_lien
+        label: Texte du lien
+        type: string
+
+  - name: evenements
+    label: Programme et événements
+    type: collection
+    path: content/evenements
+    format: json
+    filename: "{date}-{title}.json"
+    view:
+      fields: [title, date, date_affichee]
+      primary: title
+      sort: [date, title]
+      default:
+        sort: date
+        order: asc
+    fields:
+      - name: title
+        label: Titre
+        type: string
+        required: true
+      - name: date
+        label: Date de tri
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: date_affichee
+        label: Date affichée
+        type: string
+        description: "Exemple : 12–13 septembre"
+        required: true
+      - name: resume
+        label: Description
+        type: text
+        required: true
+      - name: lien
+        label: Lien facultatif
+        type: string
+      - name: libelle_lien
+        label: Texte du lien
+        type: string
+
+settings:
+  content:
+    merge: true
+  commit:
+    identity: app
+    templates:
+      create: "contenu : ajouter {filename}"
+      update: "contenu : modifier {filename}"
+      delete: "contenu : supprimer {filename}"
+      rename: "contenu : renommer {oldFilename} en {newFilename}"

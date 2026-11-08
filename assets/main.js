@@ -69,6 +69,10 @@ if (carousel) {
   const count = carousel.querySelector('.carousel-count b');
   const toggle = carousel.querySelector('.carousel-toggle');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const playbackIcon = isPaused => `<span class="papicon papicon-${isPaused ? 'play' : 'pause'}" aria-hidden="true"></span>`;
+  carousel.querySelector('.carousel-prev').innerHTML = '<span class="papicon papicon-arrow-left" aria-hidden="true"></span>';
+  carousel.querySelector('.carousel-next').innerHTML = '<span class="papicon papicon-arrow-right" aria-hidden="true"></span>';
+  toggle.innerHTML = playbackIcon(reduceMotion);
   let currentSlide = 0;
   let paused = reduceMotion;
   let timer;
@@ -89,13 +93,13 @@ if (carousel) {
     paused = !paused;
     toggle.setAttribute('aria-pressed', String(paused));
     toggle.setAttribute('aria-label', paused ? 'Relancer le carrousel' : 'Mettre le carrousel en pause');
-    toggle.textContent = paused ? '▶' : 'Ⅱ';
+    toggle.innerHTML = playbackIcon(paused);
     start();
   });
   if (reduceMotion) {
     toggle.setAttribute('aria-pressed', 'true');
     toggle.setAttribute('aria-label', 'Relancer le carrousel');
-    toggle.textContent = '▶';
+    toggle.innerHTML = playbackIcon(true);
   }
   document.addEventListener('visibilitychange', () => document.hidden ? clearInterval(timer) : start());
   window.addEventListener('mediaremoved', event => {

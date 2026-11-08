@@ -205,6 +205,50 @@ nav a:hover {
     font-size: 18px
 }
 
+.papicon {
+    display: inline-block;
+    width: 1.35em;
+    height: 1.35em;
+    flex: 0 0 auto;
+    background: currentColor;
+    -webkit-mask: var(--papicon) center / contain no-repeat;
+    mask: var(--papicon) center / contain no-repeat
+}
+
+.papicon-clock {
+    --papicon: url('/assets/icons/papicons/clock.svg')
+}
+
+.papicon-card {
+    --papicon: url('/assets/icons/papicons/card.svg')
+}
+
+.papicon-map-pin {
+    --papicon: url('/assets/icons/papicons/map-pin.svg')
+}
+
+.papicon-arrow-left {
+    --papicon: url('/assets/icons/papicons/arrow-left.svg')
+}
+
+.papicon-arrow-right {
+    --papicon: url('/assets/icons/papicons/arrow-right.svg')
+}
+
+.papicon-pause {
+    --papicon: url('/assets/icons/papicons/pause.svg')
+}
+
+.papicon-play {
+    --papicon: url('/assets/icons/papicons/play.svg')
+}
+
+.carousel-controls .papicon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle
+}
+
 .carousel-controls button:last-child {
     border: 0;
     border-left: 1px solid #ffffff55;
@@ -355,7 +399,10 @@ h1 {
 
 .icon {
     color: var(--red);
-    font-size: 25px
+    font-size: 25px;
+    width: 30px;
+    height: 30px;
+    margin-top: 2px
 }
 
 .section {
