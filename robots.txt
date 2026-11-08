@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://cedric-martz.github.io/maison_alsacienne/sitemap.xml
