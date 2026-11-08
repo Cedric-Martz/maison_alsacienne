@@ -1,14 +1,5 @@
 # Guide rapide pour les éditeurs
 
-## Se connecter
-
-1. Ouvrir <https://app.pagescms.org/>.
-2. Choisir **Sign in with GitHub**.
-3. Ouvrir le dépôt `Cedric-Martz/maison_alsacienne`, puis la branche `main`.
-
-Chaque éditeur doit utiliser son propre compte GitHub avec la double
-authentification activée. Aucun mot de passe commun n’est nécessaire.
-
 ## Modifier les informations pratiques
 
 Ouvrir **Informations pratiques**, modifier les champs voulus, vérifier les
