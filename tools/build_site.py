@@ -22,6 +22,14 @@ PUBLIC_FILES = (
     "sitemap.xml",
 )
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+LEGACY_REDIRECTS = {
+    "visite": "/visite.html",
+    "manifestations": "/programme.html",
+    "chantiers-internationaux-de-jeunes-benevoles": "/chantiers.html",
+    "chantiers-de-l-annee": "/activites.html",
+    "publications": "/publications.html",
+    "nos-partenaires": "/partenaires.html",
+}
 
 
 def escape(value: object) -> str:
@@ -89,6 +97,31 @@ def copy_public(output: Path) -> None:
             shutil.copy2(source, output / name)
     for name in PUBLIC_DIRECTORIES:
         shutil.copytree(ROOT / name, output / name)
+
+
+def render_legacy_redirects(output: Path) -> None:
+    """Keep URLs from the former site working on GitHub Pages."""
+    for legacy_path, destination in LEGACY_REDIRECTS.items():
+        directory = output / legacy_path
+        directory.mkdir()
+        canonical = f"https://www.maisonalsacienne.fr{destination}"
+        page = f'''<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,follow">
+  <meta http-equiv="refresh" content="0; url={escape(destination)}">
+  <link rel="canonical" href="{escape(canonical)}">
+  <title>Page déplacée | Parc de la Maison Alsacienne</title>
+  <script>location.replace({json.dumps(destination)} + location.search + location.hash)</script>
+</head>
+<body>
+  <p>Cette page a été déplacée. <a href="{escape(destination)}">Continuer vers la nouvelle page</a>.</p>
+</body>
+</html>
+'''
+        (directory / "index.html").write_text(page, encoding="utf-8")
 
 
 def render_information(output: Path, info: dict) -> None:
@@ -170,24 +203,34 @@ def render_information(output: Path, info: dict) -> None:
 
 def render_events(output: Path) -> None:
     events = []
+    anchors = set()
     for path in (ROOT / "content" / "evenements").glob("*.json"):
         event = load_json(path, dict)
         event_date = required(event, "date")
         if not DATE_RE.fullmatch(event_date):
             raise RuntimeError(f"Date invalide dans {path.relative_to(ROOT)}")
+        anchor = str(event.get("ancre", "")).strip()
+        if anchor and not re.fullmatch(r"[a-z0-9-]+", anchor):
+            raise RuntimeError(f"Ancre invalide dans {path.relative_to(ROOT)} : {anchor}")
+        if anchor in anchors:
+            raise RuntimeError(f"Ancre utilisée plusieurs fois : {anchor}")
+        if anchor:
+            anchors.add(anchor)
         events.append(event)
     events.sort(key=lambda event: (event["date"], event["title"]))
     if not events:
         raise RuntimeError("Le programme doit contenir au moins un événement")
     articles = []
     for event in events:
+        anchor = str(event.get("ancre", "")).strip()
+        anchor_html = f' id="{escape(anchor)}"' if anchor else ""
         link = safe_url(event.get("lien"))
         link_html = ""
         if link:
             label = str(event.get("libelle_lien") or "En savoir plus")
             link_html = f'<a href="{escape(link)}">{escape(label)} →</a>'
         articles.append(
-            f'<article><time datetime="{escape(event["date"])}">{escape(required(event, "date_affichee"))}</time><div><h2>{escape(required(event, "title"))}</h2><p>{escape(required(event, "resume"))}</p>{link_html}</div></article>'
+            f'<article{anchor_html}><time datetime="{escape(event["date"])}">{escape(required(event, "date_affichee"))}</time><div><h2>{escape(required(event, "title"))}</h2><p>{escape(required(event, "resume"))}</p>{link_html}</div></article>'
         )
     timeline = '<section class="timeline wrap" id="calendrier">' + "".join(articles) + "</section>"
     programme = output / "programme.html"
@@ -308,6 +351,7 @@ def main() -> None:
     if output == ROOT or ROOT not in output.parents:
         parser.error("Le dossier de sortie doit rester dans le dépôt")
     copy_public(output)
+    render_legacy_redirects(output)
     info = load_json(ROOT / "content" / "informations.json", dict)
     render_information(output, info)
     render_events(output)

@@ -32,36 +32,14 @@
     : window.location.pathname;
   const pathParts = pathname.split('/').filter(Boolean);
   const pathLocale = supported.includes(pathParts[0]) ? pathParts[0] : null;
-  const unknownLocale = !pathLocale && /^[a-z]{2}$/i.test(pathParts[0] || '') ? pathParts[0].toLowerCase() : null;
   const currentLocale = pathLocale || 'fr';
   const page = pathLocale ? (pathParts.slice(1).join('/') || 'index.html') : (pathParts.at(-1) || 'index.html');
   const preferenceKey = 'maison-alsacienne-language';
-
-  function closestLocale(languages) {
-    for (const language of languages) {
-      const code = String(language).toLowerCase();
-      const primary = code.split('-')[0];
-      if (supported.includes(primary)) return primary;
-      if (['gsw', 'lb', 'af', 'da', 'no', 'sv'].includes(primary)) return 'de';
-      if (['ca', 'gl', 'eu', 'ro'].includes(primary)) return 'es';
-      if (primary === 'oc') return 'fr';
-    }
-    return 'en';
-  }
 
   function urlFor(locale) {
     const suffix = page === 'index.html' ? '' : page;
     const route = locale === 'fr' ? `/${suffix}` : `/${locale}/${suffix}`;
     return siteBase + route;
-  }
-
-  const stored = localStorage.getItem(preferenceKey);
-  if (!pathLocale && page !== 'mentions-legales.html') {
-    const detected = unknownLocale ? 'en' : (supported.includes(stored) ? stored : closestLocale(navigator.languages || [navigator.language]));
-    if (detected !== 'fr') {
-      window.location.replace(urlFor(detected) + window.location.search + window.location.hash);
-      return;
-    }
   }
 
   const messages = {

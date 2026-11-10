@@ -194,6 +194,11 @@ content:
         label: Description
         type: text
         required: true
+      - name: ancre
+        label: Ancre dans la page
+        type: string
+        description: "Identifiant facultatif utilisé par les liens internes, par exemple : chantiers"
+        pattern: "^[a-z0-9-]+$"
       - name: lien
         label: Lien facultatif
         type: string
