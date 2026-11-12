@@ -129,12 +129,6 @@ nav a:hover {
     padding: 9px 17px
 }
 
-.nav-news {
-    background: var(--red);
-    color: #fff;
-    padding: 9px 14px
-}
-
 .menu {
     display: none
 }
