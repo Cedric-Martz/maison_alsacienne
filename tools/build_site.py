@@ -99,6 +99,26 @@ def copy_public(output: Path) -> None:
         shutil.copytree(ROOT / name, output / name)
 
 
+def render_navigation(output: Path) -> None:
+    """Expose the news page in the primary navigation in every language."""
+    labels = {"fr": "Actualités", "en": "News", "de": "Aktuelles", "es": "Actualidad"}
+    for page in output.rglob("*.html"):
+        source = page.read_text(encoding="utf-8")
+        if 'id="navigation"' not in source:
+            continue
+        language = page.parent.name if page.parent.name in labels else "fr"
+        link = f'<a class="nav-news" href="actualites.html">{labels[language]}</a>'
+        navigation_match = re.search(r'<nav\b[^>]*id="navigation"[^>]*>.*?</nav>', source, flags=re.DOTALL)
+        if not navigation_match or 'href="actualites.html"' in navigation_match.group(0):
+            continue
+        navigation = navigation_match.group(0)
+        updated_navigation, count = re.subn(r'(<nav\b[^>]*>)', r'\1' + link, navigation, count=1)
+        if count != 1:
+            raise RuntimeError(f"Navigation invalide dans {page.relative_to(output)}")
+        source = source[:navigation_match.start()] + updated_navigation + source[navigation_match.end():]
+        page.write_text(source, encoding="utf-8")
+
+
 def render_legacy_redirects(output: Path) -> None:
     """Keep URLs from the former site working on GitHub Pages."""
     for legacy_path, destination in LEGACY_REDIRECTS.items():
@@ -258,7 +278,7 @@ def render_events(output: Path) -> None:
         home_events.append(
             f'<div class="{css}"><time datetime="{escape(event["date"])}"><b>{day:02d}</b><span>{months[month - 1]}</span></time><div><p class="tag">{escape(required(event, "date_affichee"))}</p><h3>{escape(required(event, "title"))}</h3><p>{escape(required(event, "resume"))}</p></div>{arrow}</div>'
         )
-    agenda = f'''<section class="agenda section wrap" id="agenda"><div class="section-head"><div><p class="eyebrow red">À noter</p><h2>La vie du parc</h2></div><p>Le programme est mis à jour par l’association. Contactez-nous pour confirmer une date avant votre venue.</p></div>{"".join(home_events)}</section>'''
+    agenda = f'''<section class="agenda section wrap" id="agenda"><div class="section-head"><div><p class="eyebrow red">À noter</p><h2>La vie du parc</h2></div><div class="agenda-intro"><p>Le programme est mis à jour par l’association. Vous pouvez nous contacter pour confirmer une date avant votre venue.</p><a class="button primary" href="actualites.html">Voir toutes les actualités</a></div></div>{"".join(home_events)}</section>'''
     replace_once(output / "index.html", r'<section class="agenda section wrap" id="agenda">.*?</section>', agenda)
 
 
@@ -275,15 +295,29 @@ def render_news(output: Path) -> None:
         raise RuntimeError("La page Actualités doit contenir au moins une actualité")
     cards = []
     for index, item in enumerate(news):
-        image = safe_url(required(item, "image"))
-        link = safe_url(item.get("lien"))
+        file_url = safe_url(item.get("fichier"))
+        legacy_image = safe_url(item.get("image"))
+        legacy_link = safe_url(item.get("lien"))
+        link = file_url or legacy_link
         link_html = ""
         if link:
-            label = str(item.get("libelle_lien") or "En savoir plus")
-            link_html = f'<a class="text-link" href="{escape(link)}">{escape(label)} <span>→</span></a>'
+            suffix = Path(urlsplit(link).path).suffix.lower()
+            default_label = "Ouvrir le PDF" if suffix == ".pdf" else "Voir l’image" if suffix in {".jpg", ".jpeg", ".png", ".webp"} else "En savoir plus"
+            label = str(item.get("libelle_lien") or default_label)
+            new_window = ' target="_blank" rel="noopener"' if file_url or link.startswith(("http://", "https://")) else ""
+            link_html = f'<a class="text-link" href="{escape(link)}"{new_window}>{escape(label)} <span>→</span></a>'
+        image = file_url if Path(urlsplit(file_url).path).suffix.lower() in {".jpg", ".jpeg", ".png", ".webp"} else legacy_image
+        media_html = ""
+        if image:
+            image_alt = str(item.get("image_alt") or item["title"])
+            image_tag = f'<img src="{escape(image)}" alt="{escape(image_alt)}" loading="lazy">'
+            media_html = f'<a class="news-media" href="{escape(file_url)}" target="_blank" rel="noopener">{image_tag}</a>' if file_url else f'<div class="news-media">{image_tag}</div>'
+        elif file_url:
+            media_html = f'<a class="news-media document" href="{escape(file_url)}" target="_blank" rel="noopener"><span>PDF</span><strong>{escape(required(item, "title"))}</strong><small>Ouvrir le document →</small></a>'
         reverse = " reverse" if index % 2 else ""
+        text_only = " text-only" if not media_html else ""
         cards.append(
-            f'<section class="split-feature{reverse}"><img src="{escape(image)}" alt="{escape(required(item, "image_alt"))}" loading="lazy"><div><p class="eyebrow red">{escape(required(item, "categorie"))}</p><h2>{escape(required(item, "title"))}</h2><p>{escape(required(item, "resume"))}</p>{link_html}</div></section>'
+            f'<section class="split-feature{reverse}{text_only}">{media_html}<div><p class="eyebrow red">{escape(required(item, "categorie"))}</p><h2>{escape(required(item, "title"))}</h2><p>{escape(required(item, "resume"))}</p>{link_html}</div></section>'
         )
     replacement = '<div class="page-content cms-news">' + "".join(cards) + "</div></main><footer>"
     replace_once(output / "actualites.html", r'<div class="page-content">.*</div></main><footer>', replacement)
@@ -316,10 +350,10 @@ def render_gallery(output: Path) -> None:
     page = output / "galerie.html"
     source = page.read_text(encoding="utf-8")
     source = re.sub(r'<strong>\d+<small>photographies</small></strong>', f'<strong>{len(gallery)}<small>photographies</small></strong>', source, count=1)
-    filters = [f'<button class="active" data-filter="all">Toutes <span>{len(gallery)}</span></button>']
+    filters = [f'<button class="active" data-filter="all" aria-pressed="true">Toutes <span>{len(gallery)}</span></button>']
     for year in sorted(years, reverse=True):
-        filters.append(f'<button data-filter="{year}">{year} <span>{years[year]}</span></button>')
-    source, filter_count = re.subn(r'<div aria-label="Filtrer par année" class="filters">.*?</div>', '<div aria-label="Filtrer par année" class="filters">' + "".join(filters) + "</div>", source, count=1, flags=re.DOTALL)
+        filters.append(f'<button data-filter="{year}" aria-pressed="false">{year} <span>{years[year]}</span></button>')
+    source, filter_count = re.subn(r'<div aria-label="Filtrer par année" class="filters">.*?</div>', '<div aria-label="Filtrer par année" class="filters" role="group">' + "".join(filters) + "</div>", source, count=1, flags=re.DOTALL)
     source, grid_count = re.subn(r'<div class="archive-grid">.*?</div>', '<div class="archive-grid">' + "".join(cards) + "</div>", source, count=1, flags=re.DOTALL)
     if filter_count != 1 or grid_count != 1:
         raise RuntimeError("Structure de la galerie introuvable")
@@ -352,6 +386,7 @@ def main() -> None:
         parser.error("Le dossier de sortie doit rester dans le dépôt")
     copy_public(output)
     render_legacy_redirects(output)
+    render_navigation(output)
     info = load_json(ROOT / "content" / "informations.json", dict)
     render_information(output, info)
     render_events(output)

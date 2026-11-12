@@ -6,6 +6,13 @@ media:
     extensions: [jpg, jpeg, png, webp]
     categories: [image]
     rename: safe
+  - name: publications
+    label: PDF et images des actualités
+    input: assets/publications
+    output: /assets/publications
+    extensions: [pdf, jpg, jpeg, png, webp]
+    categories: [document, image]
+    rename: safe
 
 content:
   - name: informations
@@ -113,7 +120,7 @@ content:
         pattern: "^[0-9]{4}$"
 
   - name: actualites
-    label: Actualités
+    label: Actualités et publications
     type: collection
     path: content/actualites
     format: json
@@ -137,29 +144,27 @@ content:
         options:
           format: yyyy-MM-dd
       - name: categorie
-        label: Catégorie
+        label: Accroche (eyebrow)
         type: string
-        required: true
-      - name: image
-        label: Photo
-        type: image
-        required: true
-        options:
-          media: images
-      - name: image_alt
-        label: Description de la photo
-        type: string
+        description: "Court texte affiché au-dessus du titre, par exemple : Événement 2026"
         required: true
       - name: resume
-        label: Texte
+        label: Contenu
         type: text
         required: true
-      - name: lien
-        label: Lien facultatif
-        type: string
+      - name: fichier
+        label: PDF ou image à ouvrir
+        type: file
+        description: "Importer le document ou l’affiche qui sera ouvert au clic."
+        options:
+          media: publications
+          extensions: [pdf, jpg, jpeg, png, webp]
+          categories: [document, image]
+          rename: safe
       - name: libelle_lien
-        label: Texte du lien
+        label: Texte du lien (facultatif)
         type: string
+        description: "Exemple : Consulter l’affiche. Un libellé automatique sera utilisé si ce champ reste vide."
 
   - name: evenements
     label: Programme et événements

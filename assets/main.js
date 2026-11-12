@@ -16,8 +16,12 @@ if (year) year.textContent = new Date().getFullYear();
 
 const archiveCards = [...document.querySelectorAll('.archive-card')];
 document.querySelectorAll('[data-filter]').forEach(filter => filter.addEventListener('click', () => {
-  document.querySelectorAll('[data-filter]').forEach(item => item.classList.remove('active'));
+  document.querySelectorAll('[data-filter]').forEach(item => {
+    item.classList.remove('active');
+    item.setAttribute('aria-pressed', 'false');
+  });
   filter.classList.add('active');
+  filter.setAttribute('aria-pressed', 'true');
   archiveCards.forEach(card => {
     card.hidden = filter.dataset.filter !== 'all' && card.dataset.year !== filter.dataset.filter;
   });
