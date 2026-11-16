@@ -313,7 +313,7 @@ def render_news(output: Path) -> None:
             image_tag = f'<img src="{escape(image)}" alt="{escape(image_alt)}" loading="lazy">'
             media_html = f'<a class="news-media" href="{escape(file_url)}" target="_blank" rel="noopener">{image_tag}</a>' if file_url else f'<div class="news-media">{image_tag}</div>'
         elif file_url:
-            media_html = f'<a class="news-media document" href="{escape(file_url)}" target="_blank" rel="noopener"><span>PDF</span><strong>{escape(required(item, "title"))}</strong><small>Ouvrir le document →</small></a>'
+            media_html = f'<a class="news-media document" href="{escape(file_url)}" target="_blank" rel="noopener"><span>PDF</span><strong>Document à consulter</strong><small>Ouvrir le document →</small></a>'
         reverse = " reverse" if index % 2 else ""
         text_only = " text-only" if not media_html else ""
         cards.append(

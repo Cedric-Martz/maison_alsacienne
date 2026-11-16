@@ -306,6 +306,14 @@ h2 {
     margin: 0
 }
 
+h1,
+h2,
+h3 {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    hyphens: auto
+}
+
 h1 {
     max-width: 850px
 }
@@ -814,6 +822,37 @@ h1 {
     align-items: stretch
 }
 
+.split-feature>*,
+.editorial>*,
+.localized-grid>*,
+.cards>*,
+.contact-grid>*,
+.publication>*,
+.timeline article>* {
+    min-width: 0
+}
+
+.cms-news .split-feature>div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center
+}
+
+.cms-news .split-feature h2 {
+    font-size: clamp(32px, 3.5vw, 50px);
+    line-height: 1.04
+}
+
+.cms-news .split-feature>div>p:not(.eyebrow) {
+    max-width: 58ch
+}
+
+.cms-news .text-link {
+    align-self: flex-start;
+    max-width: 100%;
+    overflow-wrap: anywhere
+}
+
 .split-feature.reverse>.news-media,
 .split-feature.reverse>img {
     order: 2
@@ -868,7 +907,8 @@ h1 {
 
 .news-media.document strong {
     max-width: 440px;
-    font: 36px/1.15 var(--serif)
+    font: clamp(28px, 3vw, 40px)/1.15 var(--serif);
+    overflow-wrap: anywhere
 }
 
 .news-media.document small {
@@ -1593,7 +1633,7 @@ html[dir="rtl"] .language-footer {
     direction: rtl
 }
 
-@media(max-width:900px) {
+@media(max-width:1050px) {
     .bar {
         height: 74px
     }
@@ -1649,7 +1689,9 @@ html[dir="rtl"] .language-footer {
         font-size: 9px;
         text-transform: uppercase
     }
+}
 
+@media(max-width:900px) {
     .hero {
         min-height: 670px
     }
