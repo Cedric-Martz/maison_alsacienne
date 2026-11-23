@@ -136,6 +136,7 @@ content:
       - name: title
         label: Titre
         type: string
+        description: "Titre court conseillé : une ligne, environ 70 caractères maximum."
         required: true
       - name: date
         label: Date de publication
@@ -146,11 +147,12 @@ content:
       - name: categorie
         label: Accroche (eyebrow)
         type: string
-        description: "Court texte affiché au-dessus du titre, par exemple : Événement 2026"
+        description: "Court texte affiché au-dessus du titre, par exemple : Événement 2026. Éviter les phrases longues."
         required: true
       - name: resume
         label: Contenu
         type: text
+        description: "Résumé conseillé : 2 à 3 phrases. Le gabarit adapte automatiquement la taille du texte et de l’image."
         required: true
       - name: fichier
         label: PDF ou image à ouvrir
@@ -161,6 +163,10 @@ content:
           extensions: [pdf, jpg, jpeg, png, webp]
           categories: [document, image]
           rename: safe
+      - name: image_alt
+        label: Description de l’image (facultatif)
+        type: string
+        description: "Décrire brièvement l’image pour l’accessibilité. Si ce champ est vide, le titre de l’actualité sera utilisé."
       - name: libelle_lien
         label: Texte du lien (facultatif)
         type: string

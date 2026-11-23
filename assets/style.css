@@ -310,7 +310,7 @@ h1,
 h2,
 h3 {
     min-width: 0;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
     hyphens: auto
 }
 
@@ -832,19 +832,21 @@ h1 {
     min-width: 0
 }
 
-.cms-news .split-feature>div {
+.cms-news .split-feature>div:not(.news-media) {
     display: flex;
     flex-direction: column;
     justify-content: center
 }
 
 .cms-news .split-feature h2 {
-    font-size: clamp(32px, 3.5vw, 50px);
-    line-height: 1.04
+    font-size: clamp(30px, 2.75vw, 44px);
+    line-height: 1.08
 }
 
 .cms-news .split-feature>div>p:not(.eyebrow) {
-    max-width: 58ch
+    max-width: 58ch;
+    font-size: clamp(16px, 1.1vw, 18px);
+    line-height: 1.65
 }
 
 .cms-news .text-link {
@@ -865,6 +867,11 @@ h1 {
     min-height: 520px;
     max-height: 680px;
     object-fit: cover
+}
+
+.cms-news .split-feature>.news-media {
+    min-height: clamp(380px, 32vw, 520px);
+    max-height: none
 }
 
 .news-media {
@@ -919,13 +926,15 @@ h1 {
     grid-template-columns: 1fr
 }
 
-.split-feature>div {
-    padding: 90px max(40px, calc((100vw - 1160px)/2));
+.split-feature>div:not(.news-media) {
+    padding-block: clamp(64px, 7vw, 90px);
+    padding-left: clamp(40px, 6vw, 110px);
     padding-right: max(40px, calc((100vw - 1160px)/2))
 }
 
-.split-feature.reverse>div {
-    padding-left: max(40px, calc((100vw - 1160px)/2))
+.split-feature.reverse>div:not(.news-media) {
+    padding-left: max(40px, calc((100vw - 1160px)/2));
+    padding-right: clamp(40px, 6vw, 110px)
 }
 
 .map-image {
@@ -1887,8 +1896,8 @@ html[dir="rtl"] .language-footer {
         padding: 60px 20px
     }
 
-    .split-feature>div,
-    .split-feature.reverse>div {
+    .split-feature>div:not(.news-media),
+    .split-feature.reverse>div:not(.news-media) {
         padding: 60px 20px
     }
 
