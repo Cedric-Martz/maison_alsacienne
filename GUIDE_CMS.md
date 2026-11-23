@@ -8,10 +8,11 @@ horaires, tarifs et coordonnées, puis enregistrer.
 ## Ajouter une actualité
 
 1. Ouvrir **Actualités** et créer une entrée.
-2. Renseigner la date, l’accroche, le titre et le contenu.
+2. Renseigner la date, une accroche courte, le titre et un résumé de 2 à 3 phrases.
 3. Dans **PDF ou image à ouvrir**, importer le PDF ou l’image à publier.
-4. Renseigner éventuellement le texte du lien, par exemple « Consulter l’affiche ».
-5. Cliquer sur **Enregistrer**. Le document et l’actualité seront publiés ensemble après quelques minutes.
+4. Pour une image, renseigner si possible sa description pour les visiteurs utilisant un lecteur d’écran.
+5. Renseigner éventuellement le texte du lien, par exemple « Consulter l’affiche ».
+6. Cliquer sur **Enregistrer**. Le document et l’actualité seront publiés ensemble après quelques minutes. La mise en page, la taille du texte et le cadrage du visuel sont appliqués automatiquement.
 
 ## Ajouter un événement
 
