@@ -1,4 +1,11 @@
 media:
+  - name: documents
+    label: Documents du site
+    input: assets/documents
+    output: /assets/documents
+    extensions: [pdf]
+    categories: [document]
+    rename: safe
   - name: images
     label: Photos du site
     input: assets/media
@@ -7,7 +14,7 @@ media:
     categories: [image]
     rename: safe
   - name: publications
-    label: PDF et images des actualités
+    label: PDF et images des actualités et publications
     input: assets/publications
     output: /assets/publications
     extensions: [pdf, jpg, jpeg, png, webp]
