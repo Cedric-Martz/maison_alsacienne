@@ -1,5 +1,14 @@
 # Guide rapide pour les éditeurs
 
+## Retrouver les fichiers du site
+
+Ouvrir **Médias** pour consulter les fichiers déjà publiés. Ils sont répartis
+en trois bibliothèques :
+
+- **Documents du site** : dépliants, formulaires et dossiers PDF permanents ;
+- **Photos du site** : images utilisées dans les pages et la galerie ;
+- **PDF et images des actualités et publications** : pièces jointes ajoutées aux actualités.
+
 ## Modifier les informations pratiques
 
 Ouvrir **Informations pratiques**, modifier les champs voulus, vérifier les
